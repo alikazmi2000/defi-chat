@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
+    mode: 'development',
     entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -19,6 +20,10 @@ module.exports = {
                         presets: ['@babel/preset-env', '@babel/preset-react'],
                     },
                 },
+            },
+            {
+                test: /\.worker\.js$/,
+                use: { loader: 'worker-loader' },
             },
             {
                 test: /\.css$/,
@@ -42,8 +47,9 @@ module.exports = {
         ],
     },
     devServer: {
-        contentBase: './dist',
+        static: path.join(__dirname, 'dist'),
         port: 3000,
+        historyApiFallback: true,
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -52,14 +58,14 @@ module.exports = {
         }),
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer']
-          })
+        })
     ],
     resolve: {
         extensions: ['.js', '.jsx'],
         fallback: {
-          buffer: require.resolve('buffer/'),
-          crypto: require.resolve('crypto-browserify'),
+            buffer: require.resolve('buffer/'),
+            crypto: require.resolve('crypto-browserify'),
         },
-      },
-    
+    },
+
 };
