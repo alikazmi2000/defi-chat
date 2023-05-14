@@ -10,7 +10,8 @@ const initialState = {
   isLoading: false,
   error: null,
 };
-const url = 'http://localhost:3001/users'
+const url = 'https://localhost:3001/users'
+// const url = 'https://5fad-37-166-225-17.eu.ngrok.io'
 export const authSlice = createSlice({
   name: 'auth',
   initialState,

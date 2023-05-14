@@ -69,8 +69,8 @@ const ChatPage = () => {
     return ciphertext;
   }
 
-  async function decryptMessage(text) {
-    let pbl = await readKey({ armoredKey: armFriendPublicKey })
+  async function decryptMessage(text,key) {
+    let pbl = await readKey({ armoredKey: key })
     let msg = await readMessage({ armoredMessage: text });
     const decrypted = await decrypt({
       message: msg,
@@ -83,7 +83,8 @@ const ChatPage = () => {
     return decrypted;
   }
   useEffect(() => {
-    const newSocket = io('http://localhost:3001');
+    // const newSocket = io('https://5fad-37-166-225-17.eu.ngrok.io');
+    const newSocket = io('https://localhost:3001');
 
     setSocket(newSocket);
     // Clean up the socket connection when the component unmounts
@@ -148,10 +149,11 @@ const ChatPage = () => {
     let isUpdated = false
     await Promise.all(messages.map(async e => {
       if (!e.isDisplay) {
+        let key = (e.email === user.email)?armPublicKey:armFriendPublicKey
         arr.push({
           ...e,
           isDisplay: true,
-          message: await decryptMessage(e.cipher)
+          message: await decryptMessage(e.cipher,key)
         })
         isUpdated = true
       }
@@ -181,6 +183,11 @@ const ChatPage = () => {
       let cipher = await encryptText(inputText.trim());
       // let textFile = await decryptMessage(cipher);
       socket.emit('sendMessage', { cipher, email: user.email });
+      setMessageBus(messageBus=>[...messageBus,{
+        cipher: cipher,
+        isDisplay: false,
+        email: user.email
+      }])
       setInputText('');
 
     }
